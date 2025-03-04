@@ -1,4 +1,5 @@
-package com.example.taskplanner.controller;//%% NEW FILE TaskController BEGINS HERE %%
+package com.example.taskplanner.controller;
+//%% NEW FILE TaskController BEGINS HERE %%
 
 /*PLEASE DO NOT EDIT THIS CODE*/
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
@@ -10,8 +11,11 @@ import com.example.taskplanner.view.TaskAdapter;
 import java.util.*;
 import java.sql.Date;
 
-// line 18 "model.ump"
-// line 41 "model.ump"
+/**
+ * TaskController  **************
+ */
+// line 37 "model.ump"
+// line 70 "model.ump"
 public class TaskController
 {
 
@@ -106,7 +110,7 @@ public class TaskController
   }
   /* Code from template association_AddIndexControlFunctions */
   public boolean addTaskAt(Task aTask, int index)
-  {  
+  {
     boolean wasAdded = false;
     if(addTask(aTask))
     {
@@ -129,8 +133,8 @@ public class TaskController
       tasks.remove(aTask);
       tasks.add(index, aTask);
       wasAdded = true;
-    } 
-    else 
+    }
+    else
     {
       wasAdded = addTaskAt(aTask, index);
     }
@@ -146,19 +150,28 @@ public class TaskController
     }
   }
 
-  // line 21 "model.ump"
+  // line 40 "model.ump"
   public void addTask(String title, String description, Date dueDate){
-    
+
   }
 
-  // line 22 "model.ump"
+  // line 41 "model.ump"
   public void deleteTask(int position){
-    
+
   }
 
-  // line 23 "model.ump"
+
+  /**
+   * Method to update the status of a task
+   */
+  // line 45 "model.ump"
   public void updateTaskStatus(int position, String newStatus){
-    
+    if (position >= 0 && position < tasks.size()) {
+      Task task = tasks.get(position);
+      task.updateStatus(newStatus); // Call the updateStatus method
+    } else {
+      throw new IndexOutOfBoundsException("Invalid position: " + position);
+    }
   }
 
 }

@@ -1,4 +1,5 @@
-package com.example.taskplanner.view;//%% NEW FILE TaskAdapter BEGINS HERE %%
+package com.example.taskplanner.view;
+//%% NEW FILE TaskAdapter BEGINS HERE %%
 
 /*PLEASE DO NOT EDIT THIS CODE*/
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
@@ -10,8 +11,11 @@ import com.example.taskplanner.model.Task;
 import java.util.*;
 import java.sql.Date;
 
-// line 26 "model.ump"
-// line 47 "model.ump"
+/**
+ * TaskAdapter  ************
+ */
+// line 55 "model.ump"
+// line 75 "model.ump"
 public class TaskAdapter
 {
 
@@ -106,7 +110,7 @@ public class TaskAdapter
   }
   /* Code from template association_AddIndexControlFunctions */
   public boolean addTaskAt(Task aTask, int index)
-  {  
+  {
     boolean wasAdded = false;
     if(addTask(aTask))
     {
@@ -129,8 +133,8 @@ public class TaskAdapter
       tasks.remove(aTask);
       tasks.add(index, aTask);
       wasAdded = true;
-    } 
-    else 
+    }
+    else
     {
       wasAdded = addTaskAt(aTask, index);
     }
@@ -146,15 +150,14 @@ public class TaskAdapter
     }
   }
 
-  // line 29 "model.ump"
+  // line 58 "model.ump"
   public void bindTask(Task task, int position){
-    
+
   }
 
-  // line 30 "model.ump"
+  // line 59 "model.ump"
   public void notifyDataSetChanged(){
-    
+
   }
 
 }
-

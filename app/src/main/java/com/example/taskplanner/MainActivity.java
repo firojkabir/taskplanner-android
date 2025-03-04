@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,12 +21,10 @@ import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
-    // UI Components
     private EditText titleEditText, descriptionEditText;
     private Button addTaskButton;
     private RecyclerView taskRecyclerView;
 
-    // Controller and Adapter
     private TaskController taskController;
     private TaskRecyclerAdapter taskRecyclerAdapter;
 
@@ -57,9 +56,16 @@ public class MainActivity extends AppCompatActivity {
                 addTask();
             }
         });
+
+        // Set up item click listener for RecyclerView
+        taskRecyclerAdapter.setOnItemClickListener(new TaskRecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                showStatusDialog(position);
+            }
+        });
     }
 
-    // Method to add a new task
     private void addTask() {
         String title = titleEditText.getText().toString().trim();
         String description = descriptionEditText.getText().toString().trim();
@@ -88,5 +94,22 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Failed to add task", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void showStatusDialog(int position) {
+        // Create a dialog to allow the user to update the task status
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Update Task Status");
+
+        // List of status options
+        String[] statusOptions = {"Pending", "InProgress", "Completed"};
+        builder.setItems(statusOptions, (dialog, which) -> {
+            String newStatus = statusOptions[which];
+            taskController.updateTaskStatus(position, newStatus);
+            taskRecyclerAdapter.notifyDataSetChanged(); // Refresh the RecyclerView
+            Toast.makeText(this, "Task status updated to " + newStatus, Toast.LENGTH_SHORT).show();
+        });
+
+        builder.create().show();
     }
 }

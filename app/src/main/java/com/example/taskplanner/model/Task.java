@@ -1,4 +1,5 @@
-package com.example.taskplanner.model;//%% NEW FILE Task BEGINS HERE %%
+package com.example.taskplanner.model;
+//%% NEW FILE Task BEGINS HERE %%
 
 /*PLEASE DO NOT EDIT THIS CODE*/
 /*This code was generated using the UMPLE 1.35.0.7523.c616a4dce modeling language!*/
@@ -9,8 +10,11 @@ import com.example.taskplanner.view.TaskAdapter;
 
 import java.sql.Date;
 
-// line 2 "model.ump"
-// line 36 "model.ump"
+/**
+ * Task ************
+ */
+// line 3 "model.ump"
+// line 65 "model.ump"
 public class Task
 {
 
@@ -110,7 +114,7 @@ public class Task
   public boolean start()
   {
     boolean wasEventProcessed = false;
-    
+
     Status aStatus = status;
     switch (aStatus)
     {
@@ -128,7 +132,7 @@ public class Task
   public boolean complete()
   {
     boolean wasEventProcessed = false;
-    
+
     Status aStatus = status;
     switch (aStatus)
     {
@@ -213,6 +217,27 @@ public class Task
   }
 
 
+  /**
+   * Method to update the status
+   */
+  // line 20 "model.ump"
+  public void updateStatus(String newStatus){
+    switch (newStatus) {
+      case "Pending":
+        // No action needed, as tasks are created in the Pending state
+        break;
+      case "InProgress":
+        start(); // Transition to InProgress
+        break;
+      case "Completed":
+        complete(); // Transition to Completed
+        break;
+      default:
+        throw new IllegalArgumentException("Invalid status: " + newStatus);
+    }
+  }
+
+
   public String toString()
   {
     return super.toString() + "["+
@@ -223,4 +248,3 @@ public class Task
             "  " + "taskAdapter = "+(getTaskAdapter()!=null?Integer.toHexString(System.identityHashCode(getTaskAdapter())):"null");
   }
 }
-
