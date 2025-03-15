@@ -1,0 +1,58 @@
+//**********  Task ************
+class Task {
+  String title;
+  String description;
+  Date dueDate;
+
+  status {
+    Pending {
+      start -> InProgress;
+    }
+    InProgress {
+      complete -> Completed;
+    }
+    Completed {}
+  }
+
+  // Method to update the status
+  void updateStatus(String newStatus) {
+    switch (newStatus) {
+      case "Pending":
+        break;
+      case "InProgress":
+        start();
+        break;
+      case "Completed":
+        complete();
+        break;
+      default:
+        throw new IllegalArgumentException("Invalid status: " + newStatus);
+    }
+  }
+}
+
+//************  TaskController  **************
+class TaskController {
+  1 --* Task tasks; // One TaskController manages multiple Tasks
+
+  void addTask(String title, String description, Date dueDate) {}
+  void deleteTask(int position) {}
+
+  // Method to update the status of a task
+  void updateTaskStatus(int position, String newStatus) {
+    if (position >= 0 && position < tasks.size()) {
+      Task task = tasks.get(position);
+      task.updateStatus(newStatus); // Call the updateStatus method
+    } else {
+      throw new IndexOutOfBoundsException("Invalid position: " + position);
+    }
+  }
+}
+
+//************  TaskAdapter  ************
+class TaskAdapter {
+  1 --* Task tasks; // TaskAdapter displays multiple Tasks
+
+  void bindTask(Task task, int position) {}
+  void notifyDataSetChanged() {}
+}

@@ -1,0 +1,32 @@
+// Define all classes in  a  single file
+
+class Task {
+  String title;
+  String description;
+  Date dueDate;
+
+  status {
+    Pending {
+      start -> InProgress;
+    }
+    InProgress {
+      complete -> Completed;
+    }
+    Completed {}
+  }
+}
+
+class TaskController {
+  * -- * Task;
+  
+  void addTask(String title, String description, Date dueDate) {}
+  void deleteTask(int position) {}
+  void updateTaskStatus(int position, String newStatus) {}
+}
+
+class TaskAdapter {
+  * -- * Task;
+  
+  void bindTask(Task task, int position) {}
+  void notifyDataSetChanged() {}
+}
