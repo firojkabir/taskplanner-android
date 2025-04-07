@@ -1,0 +1,202 @@
+//************ V3 - Perplexity ************
+// BaseTask.ump
+class BaseTask {
+  String id;
+  String title;
+  String description;
+  TaskState state;
+  Date createdAt;
+  Date updatedAt;
+
+  enum TaskState { Pending, InProgress, Completed }
+
+  constructor(String title, String description) {
+    this.id = java.util.UUID.randomUUID().toString();
+    this.title = title;
+    this.description = description;
+    this.state = TaskState.Pending;
+    this.createdAt = new java.util.Date();
+    this.updatedAt = this.createdAt;
+  }
+
+  state {
+    Pending {
+      start / { updatedAt = new java.util.Date(); } -> InProgress;
+      complete / { updatedAt = new java.util.Date(); } -> Completed;
+    }
+    InProgress {
+      pause / { updatedAt = new java.util.Date(); } -> Pending;
+      complete / { updatedAt = new java.util.Date(); } -> Completed;
+    }
+    Completed {
+      reset / { updatedAt = new java.util.Date(); } -> Pending;
+    }
+  }
+}
+
+
+// Task.ump
+class Task {
+  isA BaseTask;
+  0..1 -> * SubTask subtasks;
+
+  public void addSubtask(SubTask subtask) {
+    subtasks.add(subtask);
+  }
+
+  public void updateSubtasksState() {
+    for (SubTask subtask : subtasks) {
+      if (this.state == TaskState.Completed) {
+        subtask.complete();
+      } else if (this.state == TaskState.Pending) {
+        subtask.reset();
+      }
+    }
+  }
+
+  state {
+    Pending {
+      start / { updateSubtasksState(); } -> InProgress;
+      complete / { updateSubtasksState(); } -> Completed;
+    }
+    InProgress {
+      pause / { updateSubtasksState(); } -> Pending;
+      complete / { updateSubtasksState(); } -> Completed;
+    }
+    Completed {
+      reset / { updateSubtasksState(); } -> Pending;
+    }
+  }
+}
+
+
+// SubTask.ump
+class SubTask {
+  isA BaseTask;
+  * -> 1 Task parentTask;
+
+  constructor(String title, String description, Task parentTask) {
+    super(title, description);
+    this.parentTask = parentTask;
+  }
+
+  state {
+    Pending {
+      start / { updatedAt = new java.util.Date(); } -> InProgress;
+      complete / { updatedAt = new java.util.Date(); } -> Completed;
+    }
+    InProgress {
+      pause / { updatedAt = new java.util.Date(); } -> Pending;
+      complete / { updatedAt = new java.util.Date(); } -> Completed;
+    }
+    Completed {
+      reset / { updatedAt = new java.util.Date(); } -> Pending;
+    }
+  }
+
+  public void syncWithParent() {
+    if (parentTask.getState() == Task.TaskState.Completed) {
+      this.complete();
+    } else if (parentTask.getState() == Task.TaskState.Pending) {
+      this.reset();
+    }
+  }
+}
+
+
+
+// TaskView.ump
+interface TaskView {
+  depend Task;
+  depend SubTask;
+
+  void displayTasks(List<Task> tasks);
+  void displaySubtasks(Task task);
+  void showMessage(String message);
+}
+
+
+// TaskController.ump
+class TaskController {
+  0..1 -> * Task tasks;
+  TaskView view;
+
+  enum ControllerState { Idle, Processing, Error }
+
+  state {
+    Idle {
+      startProcessing -> Processing;
+      errorOccurred -> Error;
+    }
+    Processing {
+      finishProcessing -> Idle;
+      errorOccurred -> Error;
+    }
+    Error {
+      resetController -> Idle;
+    }
+  }
+
+  public void setView(TaskView view) {
+    this.view = view;
+  }
+
+  public List<Task> getTasks() {
+    return tasks;
+  }
+
+  public void addTask(String title, String description) {
+    startProcessing();
+    
+    try {
+      Task task = new Task(title, description);
+      tasks.add(task);
+      if (view != null) {
+        view.showMessage("Task added: " + title);
+      }
+      finishProcessing();
+    } catch (Exception e) {
+      errorOccurred();
+      throw e;
+    }
+  }
+
+  public void addSubtask(String parentId, String title, String description) {
+    startProcessing();
+
+    try {
+      for (Task task : tasks) {
+        if (task.getId().equals(parentId)) {
+          SubTask subtask = new SubTask(title, description, task);
+          task.addSubtask(subtask);
+          if (view != null) {
+            view.showMessage("Subtask added to " + task.getTitle());
+          }
+          break;
+        }
+      }
+
+      finishProcessing();
+    } catch (Exception e) {
+      errorOccurred();
+      throw e;
+    }
+  }
+
+  public void deleteTask(String id) {
+    startProcessing();
+
+    try {
+      tasks.removeIf(task -> task.getId().equals(id));
+      if (view != null) {
+        view.showMessage("Task deleted");
+      }
+      
+      finishProcessing();
+    } catch (Exception e) {
+      errorOccurred();
+      throw e;
+    }
+  }
+}
+
