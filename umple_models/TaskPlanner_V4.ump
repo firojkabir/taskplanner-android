@@ -1,4 +1,3 @@
-//************ V3 - Perplexity ************
 // BaseTask.ump
 class BaseTask {
   String id;
@@ -19,7 +18,7 @@ class BaseTask {
     this.updatedAt = this.createdAt;
   }
 
-  state {
+  sm {
     Pending {
       start / { updatedAt = new java.util.Date(); } -> InProgress;
       complete / { updatedAt = new java.util.Date(); } -> Completed;
@@ -54,7 +53,7 @@ class Task {
     }
   }
 
-  state {
+  sm {
     Pending {
       start / { updateSubtasksState(); } -> InProgress;
       complete / { updateSubtasksState(); } -> Completed;
@@ -80,7 +79,7 @@ class SubTask {
     this.parentTask = parentTask;
   }
 
-  state {
+  sm {
     Pending {
       start / { updatedAt = new java.util.Date(); } -> InProgress;
       complete / { updatedAt = new java.util.Date(); } -> Completed;
@@ -104,7 +103,6 @@ class SubTask {
 }
 
 
-
 // TaskView.ump
 interface TaskView {
   depend Task;
@@ -123,7 +121,7 @@ class TaskController {
 
   enum ControllerState { Idle, Processing, Error }
 
-  state {
+  sm {
     Idle {
       startProcessing -> Processing;
       errorOccurred -> Error;
@@ -137,7 +135,7 @@ class TaskController {
     }
   }
 
-  public void setView(TaskView view) {
+  public void settingView(TaskView view) {
     this.view = view;
   }
 
@@ -199,4 +197,3 @@ class TaskController {
     }
   }
 }
-
